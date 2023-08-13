@@ -1,14 +1,14 @@
 FROM mitmproxy/mitmproxy
 
 # set the working directory
-# WORKDIR /app
+WORKDIR /app
 
 # install dependencies
-# COPY ./requirements.txt /app
-# RUN pip install --no-cache-dir --upgrade -r requirements.txt
+COPY ./requirements.txt /app
+RUN pip install --no-cache-dir --upgrade -r requirements.txt
 
 # copy the scripts to the folder
 COPY ./*.py .
 
 # start the server
-CMD ["mitmdump","-s","main.py"] 
+CMD ["mitmdump", "-s","main.py"]

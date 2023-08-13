@@ -1,17 +1,25 @@
-spoofed = {
+from typing import Any
+
+from faker import Faker
+
+fake = Faker()
+Faker.seed(0)
+
+spoofed: dict[str, Any] = {
     "code": 0,
     "data": {},
 }
-spoofed_login = {
+
+spoofed_login: dict[str, Any] = {
     "code": 0,
     "data": {
         "account_type": [1, 2, 3, 6, 7],
         "user": {"status": 6, "name": "hacked", "org": {"id": 1340, "type": 6}},
-        "token": "9e393b1ae594706896a9b037dc0dd9b9",
+        "token": fake.md5(),
     },
 }
 
-spoofed_auth = {
+spoofed_auth: dict[str, Any] = {
     "code": 0,
     "data": {
         "auth": [

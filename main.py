@@ -1,6 +1,23 @@
-from mitmproxy import http
-from bafang_api_responses import *
 import json
+from typing import Any
+
+from bafang_api_responses import spoofed, spoofed_auth, spoofed_login
+from mitmproxy import http
+
+
+def spoof(flow: http.HTTPFlow, spoofed_response: dict[str, Any]):
+    print(
+        f"""Intercepted POST to: {flow.request.path}
+         with body: {str(flow.request.content)}"""
+    )
+
+    flow.response = http.Response.make(
+        status_code=200,
+        content=json.dumps(spoofed_response),
+        headers={"Content-Type": "application/json"},
+    )
+    return flow.response
+
 
 def request(flow: http.HTTPFlow) -> None:
     print(
@@ -11,34 +28,17 @@ def request(flow: http.HTTPFlow) -> None:
         )
     )
 
-    if (
-        flow.request.pretty_url.__contains__("/client/1/user/login")
-        and flow.request.method == "POST"
-    ):
-        print("Intercepted login")
-        flow.response = http.Response.make(
-            status_code=200,
-            content=json.dumps(spoofed_login),
-            headers={"Content-Type": "application/json"},
-        )
+    if flow.request.method == "POST":
+        if flow.request.path == "/client/1/user/login":
+            spoof(flow, spoofed_login)
 
-    elif (
-        flow.request.pretty_url.__contains__("/client/1/auth/detail")
-        and flow.request.method == "POST"
-    ):
-        print("Intercepted auth")
-        flow.response = http.Response.make(
-            status_code=200,
-            content=json.dumps(spoofed_auth),
-            headers={"Content-Type": "application/json"},
-        )
-    
-    elif (
-        flow.request.method == "POST"
-    ):
-        print("Intercepted generic POST")
-        flow.response = http.Response.make(
-            status_code=200,
-            content=json.dumps(spoofed),
-            headers={"Content-Type": "application/json"},
-        )
+        elif flow.request.path == "/client/1/auth/detail":
+            spoof(flow, spoofed_auth)
+
+        else:
+            spoof(flow, spoofed)
+
+    # Disable update check
+    if flow.request.method == "GET":
+        if flow.request.pretty_url.__contains__("update/latest.yml"):
+            flow.response = http.Response.make(status_code=404)

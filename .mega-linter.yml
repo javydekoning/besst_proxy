@@ -2,5 +2,7 @@ ENABLE:
   - PYTHON
 
 PRE_COMMANDS:
-  - command: pip install -r requirements.txt
+  - command: pip install --no-cache-dir --upgrade -r requirements.txt
     cwd: "workspace"
+  - command: pip install mitmproxy faker
+    venv: "pylint"

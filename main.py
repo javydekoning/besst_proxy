@@ -1,7 +1,7 @@
 import json
 from typing import Any
 
-from bafang_api_responses import spoofed, spoofed_auth, spoofed_login
+from bafang_api_responses import spoofed, spoofed_auth, spoofed_login, spoofed_report_list_of_org
 from mitmproxy import http
 
 
@@ -35,6 +35,13 @@ def request(flow: http.HTTPFlow) -> None:
         elif flow.request.path == "/client/1/auth/detail":
             spoof(flow, spoofed_auth)
 
+        elif flow.request.path == "/client/1/vehicle/report-list-of-org":
+            spoof(flow, spoofed_report_list_of_org)
+
+        # /client/1/stat/brand/item-stat
+        # /client/1/stat/brand/item-sales
+        # /client/1/stat/brand/item-sales-list
+        
         else:
             spoof(flow, spoofed)
 
